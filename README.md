@@ -49,12 +49,12 @@ realDoIt();
 }
 ```
 
-4. Finally, write the following and press enter. Wait till it prints "Done." followed by the results.
+Finally, write the following and press enter. Wait till it prints "Done." followed by the results.
 ```javascript
-getResults("102114000","102114095");
+getResults("102114001","102114095");
 ```
 
 This will fetch the results of all the roll numbers from 102114001 to 102114095.
-
-5. In case you're running on a slow internet, change the value of the WAIT variable to something higher (it is the number of milliseconds to wait before getting
+-----------------------
+In case you're running on a slow internet, change the value of the WAIT variable to something higher (it is the number of milliseconds to wait before getting
 the next roll number's data).
