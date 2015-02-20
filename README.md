@@ -15,7 +15,7 @@ function getResults(start, end) {
 
   var res = [];
 
-function doIt(r) {
+function doIt(r, cb) {
   var d = window.frames.main.document,
     F = d.forms[0],
     B = d.querySelector("#Button1"),
@@ -24,24 +24,33 @@ function doIt(r) {
     T.value = r;
     B.click();
 
-    setTimeout(function() {
-        var d = window.frames.main.document;
-        var name = d.querySelector("#LblName").innerText,
-            roll = d.querySelector("#LblEnrollmentNo").innerText,
-            gpa = d.querySelector("#LblGPA").innerText;
+  var prevRoll = d.querySelector("#LblEnrollmentNo") ? d.querySelector("#LblEnrollmentNo").innerText : null;
 
-        res.push([name, roll, gpa]);
-        console.log(roll);
+    setTimeout(function() {
+        try {
+          var d = window.frames.main.document;
+          var name = d.querySelector("#LblName").innerText,
+              roll = d.querySelector("#LblEnrollmentNo").innerText,
+              gpa = d.querySelector("#LblGPA").innerText;
+          
+          if(prevRoll == roll) throw new Error("Not refreshed");
+
+          res.push([name, roll, gpa]);
+          console.log(roll);
+          cb();
+       }
+       catch(e) { setTimeout(arguments.callee, WAIT/2); }
     }, WAIT);
 }
 
 function realDoIt() {
-  doIt( (realDoIt._curr++).toString() );
-  if( realDoIt._curr <= end )
-    setTimeout( realDoIt, WAIT + 200);
-  else {
-    setTimeout(function() { var s = ""; console.log("Done."); for(var i in res) { s += res[i][1] + "\t" + res[i][0] + "\t" + res[i][2] + "\n"; } console.log(s); }, WAIT + 200);
-  }
+  doIt( (realDoIt._curr++).toString(), function() {
+    if( realDoIt._curr <= end )
+      realDoIt();
+    else {
+      var s = ""; console.log("Done."); for(var i in res) { s += res[i][1] + "\t" + res[i][0] + "\t" + res[i][2] + "\n"; } console.log(s);
+    }
+  });
 }
 
 realDoIt._curr = parseInt(start);
@@ -56,5 +65,8 @@ getResults("102114001","102114095");
 
 This will fetch the results of all the roll numbers from 102114001 to 102114095.
 
-In case you're running on a slow internet, change the value of the WAIT variable to something higher (it is the number of milliseconds to wait before getting
-the next roll number's data).
+Make sure that you enter the correct range. If the last roll number is 102114099 and you enter the upper bound as
+102114105, it won't function properly. The loading of the data will stop at 102114099, however, the final output
+WON'T be displayed. Also, in case there is some "empty" roll number in the range you provide, for example, if the 
+the roll number does not exist, then the script will stop over there. When it stops, you can repeat the above 
+steps till the empty roll number (excluding it) and then use getResults from the next roll number.
